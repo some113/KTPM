@@ -28,3 +28,22 @@
   - Server: cài đặt trên máy cần điều khiến, truyền dữ liệu sao chép màn hình trên máy đến client.
   - Client hay VNC Viewer: cài đặt trên máy điều khiển, có thể gửi cả thông tin điều khiển chuột, bàn phím và cả thông tin chạm.
 # Thực hành
+- File Dockerfile:
+~~~
+FROM ubuntu:16.04
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:admin' | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+EXPOSE 22
+EXPOSE 5900
+EXPOSE 5901
+CMD ["/usr/sbin/sshd", "-D"]
+~~~
+- Quá trình làm:
+  - Tạo container với file Dockerfile (công khai các cổng và setup ssh) trên và chạy
+  - Sử dụng ssh truy cập vào container setup vncserver và DE
+  - Kết nối với vncserver thông qua phần mềm RealVNC Viewer.
+- Demo kết quả:
+![image](https://github.com/some113/KTPM/assets/100566957/ccdaf2ae-9bea-48de-8ffd-e9b807d4d11e)
